@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10b981">
+  <title>Duty Organizer - Complete System</title>
+  <link rel="stylesheet" href="styles.css?v=1.1">
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+
+<div id="notification" class="notification"></div>
+
+<div id="app" class="min-h-screen flex items-center justify-center p-4">
+  
+  <!-- Auth Card -->
+  <div id="auth-card" class="w-full max-w-md bg-gray-800 p-8 rounded-3xl shadow-2xl border border-gray-700">
+    <div class="text-center mb-8">
+      <div class="inline-block p-3 bg-emerald-500/10 rounded-2xl mb-4">
+        <span class="text-4xl">🎓</span>
+      </div>
+      <h1 class="text-3xl font-bold text-white">Duty Organizer</h1>
+      <p class="text-gray-400 mt-2">Manage OD requests effortlessly</p>
+    </div>
+    
+    <h2 id="auth-title" class="text-xl font-semibold text-center text-emerald-400 mb-6">Login to your account</h2>
+    
+    <!-- Login Form -->
+    <form id="login-form" class="space-y-4" onsubmit="event.preventDefault(); handleLogin();" autocomplete="off">
+      <input type="hidden" value="something"/> <!-- Anti-autofill trick -->
+      <div>
+        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
+        <input type="email" id="login-email" placeholder="Email Address" required autocomplete="new-password"
+               class="w-full p-3.5 bg-gray-900/50 border border-gray-700 rounded-xl text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Password</label>
+        <input type="password" id="login-password" placeholder="Password" required autocomplete="new-password"
+               class="w-full p-3.5 bg-gray-900/50 border border-gray-700 rounded-xl text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
+      </div>
+      
+      <button type="submit" 
+              class="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-900/20 active:scale-[0.98]">
+        Sign In
+      </button>
+      
+      <p id="login-error" class="text-red-400 text-sm text-center min-h-[20px]"></p>
+      
+      <div class="relative py-4">
+        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-700"></div></div>
+        <div class="relative flex justify-center text-xs uppercase"><span class="bg-gray-800 px-2 text-gray-500">New here?</span></div>
+      </div>
+      
+      <button type="button" onclick="showRegister()" class="w-full py-3 border border-gray-700 text-gray-300 rounded-xl font-semibold hover:bg-gray-700 transition-all">
+        Create an account
+      </button>
+    </form>
+
+    <!-- Registration Form -->
+    <form id="register-form" class="space-y-4 hidden" onsubmit="event.preventDefault(); handleRegister();" autocomplete="off">
+      <div class="grid grid-cols-1 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Full Name</label>
+          <input type="text" id="reg-name" placeholder="Full Name" required autocomplete="off"
+                 class="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white outline-none focus:border-emerald-500">
+        </div>
+        
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Email Address</label>
+          <input type="email" id="reg-email" placeholder="Email Address" required onkeyup="detectRole()" autocomplete="off"
+                 class="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white outline-none focus:border-emerald-500">
+        </div>
+      </div>
+
+      <div id="role-display" class="hidden p-3 rounded-xl text-center text-xs font-bold bg-emerald-500/10 border border-emerald-500/50 text-emerald-400">
+        <span id="role-text"></span>
+      </div>
+
+      <div id="role-selection" class="hidden">
+        <label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Role</label>
+        <select id="manual-role" onchange="toggleManualFields()" class="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white">
+          <option value="" disabled selected>Select Account Type</option>
+          <option value="staff">Staff Member</option>
+        </select>
+      </div>
+
+      <!-- Student Fields -->
+      <div id="student-fields" class="hidden space-y-3">
+        <input type="text" id="student-roll" placeholder="Roll Number" class="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white">
+        <div class="grid grid-cols-2 gap-3">
+          <select id="student-dept" class="p-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white">
+            <option value="BCC">BCC</option>
+            <option value="BCA">BCA</option>
+          </select>
+          <select id="student-section" class="p-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white">
+            <option value="A">Sec A</option>
+            <option value="B">Sec B</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Staff Fields -->
+      <div id="staff-fields" class="hidden">
+        <select id="staff-dept" class="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white">
+          <option value="">Select Department</option>
+          <option value="BCC">Computer Science</option>
+          <option value="BCA">Applications</option>
+        </select>
+      </div>
+
+      <div id="password-section" class="hidden grid grid-cols-2 gap-3">
+        <input type="password" id="reg-password" placeholder="Password" required class="p-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white">
+        <input type="password" id="reg-confirm" placeholder="Confirm" required class="p-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white">
+      </div>
+
+      <button type="submit" id="register-btn" 
+              class="hidden w-full py-4 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-500 shadow-lg shadow-emerald-900/20 transition-all">
+        Create Account
+      </button>
+      
+      <p id="register-error" class="text-red-400 text-xs text-center min-h-[16px]"></p>
+      
+      <button type="button" onclick="showLogin()" class="w-full text-sm text-gray-400 hover:text-white transition-colors">
+        Back to Login
+      </button>
+    </form>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="hidden fixed inset-0 w-full h-full bg-gray-950 overflow-y-auto">
+    <nav class="bg-gray-900 border-b border-gray-800 p-4 sticky top-0 z-40">
+      <div class="max-w-6xl mx-auto flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-bold">D</div>
+          <h1 class="text-lg font-bold text-white hidden sm:block">Duty Organizer</h1>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <div class="text-right hidden sm:block">
+            <div id="user-display-name" class="text-sm font-bold text-white"></div>
+            <div id="user-display-role" class="text-[10px] uppercase tracking-widest text-emerald-500"></div>
+          </div>
+          <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-400 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto p-4 sm:p-8">
+      <!-- Stats Overview -->
+      <div id="stats-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <!-- Dynamic Stats go here -->
+      </div>
+
+      <!-- Role Views -->
+      <div id="student-view" class="hidden space-y-8">
+        <div class="flex flex-wrap gap-4">
+          <button onclick="toggleSection('apply-od')" class="flex-1 min-w-[150px] p-6 bg-emerald-600 rounded-2xl hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-900/20 group">
+            <div class="text-2xl mb-2">📝</div>
+            <div class="font-bold text-white">Apply for OD</div>
+            <div class="text-xs text-emerald-100/70">Submit new request</div>
+          </button>
+          <button onclick="toggleSection('track-od')" class="flex-1 min-w-[150px] p-6 bg-gray-800 rounded-2xl hover:bg-gray-700 transition-all border border-gray-700">
+            <div class="text-2xl mb-2">📊</div>
+            <div class="font-bold text-white">My Status</div>
+            <div class="text-xs text-gray-400">Track approvals</div>
+          </button>
+          <button onclick="toggleSection('browse-events')" class="flex-1 min-w-[150px] p-6 bg-gray-800 rounded-2xl hover:bg-gray-700 transition-all border border-gray-700">
+            <div class="text-2xl mb-2">📅</div>
+            <div class="font-bold text-white">Events</div>
+            <div class="text-xs text-gray-400">Upcoming activities</div>
+          </button>
+        </div>
+
+        <div id="apply-od" class="hidden bg-gray-900 border border-gray-800 p-8 rounded-3xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <h4 class="text-xl font-bold mb-6 flex items-center"><span class="mr-2">✨</span> New Application</h4>
+          <div class="space-y-5">
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 mb-2">Select Event</label>
+              <select id="od-event" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:border-emerald-500"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 mb-2">Reason for Duty</label>
+              <textarea id="od-reason" placeholder="Reason" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white h-32 outline-none focus:border-emerald-500"></textarea>
+            </div>
+            <button onclick="submitOD()" class="px-10 py-4 bg-emerald-600 rounded-xl font-bold hover:bg-emerald-500 transition-all active:scale-95 shadow-xl shadow-emerald-900/20">Submit Request</button>
+          </div>
+        </div>
+
+        <div id="track-od" class="hidden bg-gray-900 border border-gray-800 p-8 rounded-3xl">
+          <h4 class="text-xl font-bold mb-6">Application History</h4>
+          <div id="my-od-list" class="space-y-4"></div>
+        </div>
+
+        <div id="browse-events" class="hidden bg-gray-900 border border-gray-800 p-8 rounded-3xl">
+          <h4 class="text-xl font-bold mb-6 text-purple-400">Upcoming Campus Events</h4>
+          <div id="browse-events-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+        </div>
+      </div>
+
+      <div id="staff-view" class="hidden space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button onclick="toggleSection('approve-ods')" class="p-8 bg-gray-800 rounded-3xl hover:bg-gray-700 border border-emerald-900/30 transition-all text-left">
+            <div class="text-3xl mb-4">📥</div>
+            <div class="text-2xl font-bold text-white">Pending Approvals</div>
+            <p id="pending-count-text" class="text-emerald-400 mt-2 font-medium">No requests waiting</p>
+          </button>
+          <button onclick="toggleSection('manage-events')" class="p-8 bg-gray-800 rounded-3xl hover:bg-gray-700 border border-gray-700 transition-all text-left">
+            <div class="text-3xl mb-4">⚙️</div>
+            <div class="text-2xl font-bold text-white">Manage Events</div>
+            <p class="text-gray-400 mt-2 font-medium">Create and manage duties</p>
+          </button>
+        </div>
+
+        <div id="approve-ods" class="hidden bg-gray-900 border border-gray-800 p-8 rounded-3xl">
+          <h4 class="text-xl font-bold mb-6">Review Applications</h4>
+          <div id="staff-od-list" class="space-y-4"></div>
+        </div>
+
+        <div id="manage-events" class="hidden space-y-6">
+          <div class="flex justify-between items-center">
+            <h4 class="text-xl font-bold">Event Console</h4>
+            <button onclick="toggleSection('create-event-form')" class="px-5 py-2.5 bg-emerald-600 rounded-xl font-bold text-sm hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-900/20">+ Create Event</button>
+          </div>
+          <div id="staff-events-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <div id="create-event-form" class="hidden bg-gray-900 border border-emerald-500/30 p-8 rounded-3xl">
+          <h4 class="text-xl font-bold text-emerald-400 mb-6">Host New Event</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="col-span-full">
+              <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Event Title</label>
+              <input type="text" id="ev-name" placeholder="Event Title" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Event Date</label>
+              <input type="date" id="ev-date" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Venue</label>
+              <input type="text" id="ev-venue" placeholder="Venue" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:border-emerald-500">
+            </div>
+             <div>
+              <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase">Category</label>
+              <select id="ev-cat" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:border-emerald-500">
+                <option value="Technical">Technical</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Sports">Sports</option>
+                <option value="Academic">Academic</option>
+                <option value="Workshop">Workshop</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex gap-3 mt-8">
+            <button onclick="handleCreateEvent()" class="px-8 py-3 bg-emerald-600 rounded-xl font-bold shadow-lg shadow-emerald-900/20">Publish Event</button>
+            <button onclick="toggleSection('manage-events')" class="px-8 py-3 bg-gray-800 rounded-xl font-bold border border-gray-700">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js?v=1.1"></script>
+</body>
+</html>

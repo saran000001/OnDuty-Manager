@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .notification {
+    position: fixed; top: 20px; right: 20px; padding: 12px 24px;
+    border-radius: 12px; color: white; font-weight: 500; z-index: 1000;
+    opacity: 0; transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 400px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+  .notification.show { opacity: 1; transform: translateY(0);}
+  .notification.success { background-color: #10b981; }
+  .notification.error { background-color: #ef4444; }
+}
+
+/* Custom Utilities or Global Styles */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent;}
+body { font-family: 'Inter', sans-serif; }
+
+/* Smooth Scroll */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #1f2937; }
+::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }

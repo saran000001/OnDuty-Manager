@@ -1,0 +1,23 @@
+{
+  "name": "duty-organizer",
+  "version": "1.0.0",
+  "description": "Duty Organizer Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build:css": "tailwindcss -i ./src/input.css -o ./styles.css --config ./tailwind.config.js",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./styles.css --config ./tailwind.config.js --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1",
+    "postcss": "^8.4.35",
+    "autoprefixer": "^10.4.17"
+  }
+}
